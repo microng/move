@@ -42,8 +42,9 @@
 
 <script>
 import { loginAPI } from '@/api'
-import { Notify } from 'vant'
+import Notify from '@/ui/Notify.js'
 import { setToken } from '@/utils/token'
+import { setStorage } from '@/utils/Storage.js'
 export default {
   data () {
     return {
@@ -56,19 +57,22 @@ export default {
     }
   },
   methods: {
-    async onSubmit (values) {
+    async onSubmit () {
       this.isloading = true
       try {
         const res = await loginAPI(this.user)
-        // console.log(res)
+        console.log(res)
         Notify({ type: 'success', message: '登录成功' })
         setToken(res.data.data.token)
+        setStorage('refresh_token', res.data.data.refresh_token)
         this.$router.replace({
-          path: '/layout/home'
+          path: this.$route.query.path || '/layout/home'
         })
+        // console.log(res)
       } catch (err) {
         // 抛出错误会直接进入这里
         Notify({ type: 'danger', message: '账号或密码错误' })
+        console.log(err)
       }
       this.isloading = false
     }

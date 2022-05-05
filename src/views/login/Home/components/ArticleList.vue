@@ -16,6 +16,7 @@
     :artobj="obj"
     @reportEV = "reportFn"
      @dislikeEV = "dislikeFn"
+     @click.native="itemClickFn(obj.art_id)"
     ></ArticleItem>
     </van-list>
     </van-pull-refresh>
@@ -23,9 +24,9 @@
 </template>
 
 <script>
-import ArticleItem from './ArticleItem.vue'
+import ArticleItem from '../../../../components/ArticleItem.vue'
 import { getArticlesAPI, dislikeArticleAPI, articReportAPI } from '@/api/index.js'
-import { Notify } from 'vant'
+import Notify from '@/ui/Notify.js'
 export default {
   components: { ArticleItem },
   data () {
@@ -53,6 +54,7 @@ export default {
         }
       )
       this.list = [...this.list, ...res.data.data.results]
+      // console.log(this.list)
       this.timeend = res.data.data.pre_timestamp // 通过最后一个文章的时间戳
       // 为了onLoad()事件
       this.loading = false
@@ -64,6 +66,9 @@ export default {
     },
     // 底部加载事件
     async onLoad () {
+      if (this.list.length === 0) {
+        return
+      }
       this.getArticle()
     },
     // 顶部刷新事件，情况list然后重新获取一批
@@ -87,6 +92,11 @@ export default {
         type: value
       })
       Notify({ type: 'success', message: '举报成功' })
+    },
+    itemClickFn (id) {
+      this.$router.push({
+        path: `/articdetail?art_id=${id}`
+      })
     }
   }
 }

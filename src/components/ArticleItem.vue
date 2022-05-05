@@ -7,11 +7,11 @@
           <div class="title-box">
         <span >{{ artobj.title }}</span>
         <!-- 单图 -->
-        <img v-if="artobj.cover.type===1" :src="artobj.cover.images[0]" class="thumb">
+        <img v-if="artobj.cover.type===1" v-lazy="artobj.cover.images[0]" class="thumb">
         </div>
         <!-- 多图 -->
         <div class="thumb-box" v-if="artobj.cover.type>1">
-          <img v-for="(imgUrl, index) in artobj.cover.images" :key="index" :src="imgUrl" class="thumb">
+          <img v-for="(imgUrl, index) in artobj.cover.images" :key="index" v-lazy="imgUrl" class="thumb">
         </div>
       </template>
       <!-- label区域的插槽 -->
@@ -20,10 +20,11 @@
             <div>
                 <span>{{ artobj.aut_name }}</span>
                 <span>{{ artobj.comm_count }}评论</span>
-                <span>{{formTime(artobj.pubdate) }}个月前</span>
+                <span>{{formTime(artobj.pubdate) }}</span>
             </div>
             <!-- 反馈按钮 这是那个×-->
-        <van-icon name="cross" @click="show = true" />
+            <!-- .stop阻止冒泡是为了防止点击推荐页面的那个叉执行父元素的事件 -->
+        <van-icon name="cross" @click.stop="show = true" v-if="isshow"/>
          </div>
       </template>
     </van-cell>
@@ -52,7 +53,11 @@ export default {
     }
   },
   props: {
-    artobj: Object
+    artobj: Object,
+    isshow: {
+      type: Boolean,
+      default: true
+    }
   },
   methods: {
     formTime: timeAgo, // 引入方法处理文件几个月前
